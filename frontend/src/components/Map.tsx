@@ -4,13 +4,12 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 interface MapProps {
-  updateFloodData: (cityId: number) => void;
-  cities: { id: number; name: string; lat: number; lng: number }[]; // List of cities with lat/lng
+  updateFloodData: (regionId: number) => void;
+  states: { id: number; name: string; lat: number; lng: number }[]; // List of states with lat/lng
 }
 
-const Map: React.FC<MapProps> = ({ updateFloodData, cities }) => {
-  // Set the center of the map (Maharashtra coordinates as an example)
-  const center = { lat: 19.0760, lng: 72.8777 }; // Mumbai coordinates, adjust if needed
+const Map: React.FC<MapProps> = ({ updateFloodData, states }) => {
+  const center = { lat: 19.0760, lng: 72.8777 }; // Center on Mumbai
 
   return (
     <MapContainer center={center} zoom={10} style={{ height: "400px", width: "100%" }}>
@@ -18,21 +17,19 @@ const Map: React.FC<MapProps> = ({ updateFloodData, cities }) => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
-
-      {/* Loop through cities and add markers */}
-      {cities.map((city) => (
+      {states.map((state) => (
         <Marker
-          key={city.id}
-          position={[city.lat, city.lng]}
+          key={state.id}
+          position={[state.lat, state.lng]}
           icon={new L.Icon({
-            iconUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1f/Red_dot.svg", // Marker icon
+            iconUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1f/Red_dot.svg",
             iconSize: [25, 25],
           })}
         >
           <Popup>
-            <span>{city.name}</span>
+            <span>{state.name}</span>
             <br />
-            <button onClick={() => updateFloodData(city.id)}>View Report</button>
+            <button onClick={() => updateFloodData(state.id)}>View Report</button>
           </Popup>
         </Marker>
       ))}

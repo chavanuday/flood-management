@@ -1,10 +1,9 @@
-// src/pages/Reports.tsx
 import { Card, Col, Row } from "antd";
 import Title from "antd/es/typography/Title";
 import { FC } from "react";
 import ReportsTable from "../components/ReportsTable";
 
-// Define the Reports component to accept reportData as a prop
+// Define the Reports component to accept reportData as props
 interface ReportsProps {
   reportData: any[];  // reportData is an array of report items (could be dynamically passed)
 }

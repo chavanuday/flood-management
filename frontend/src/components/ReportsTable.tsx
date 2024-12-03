@@ -1,4 +1,3 @@
-// src/components/ReportsTable.tsx
 import React, { FC } from "react";
 import { Table } from "antd";
 import { ColumnsType } from "antd/es/table";
@@ -14,11 +13,6 @@ interface DataType {
   streamflow: number;
 }
 
-// Define the prop types for the component
-interface ReportsTableProps {
-  reportData: DataType[];  // reportData must be passed to this component
-}
-
 const columns: ColumnsType<DataType> = [
   { title: "Time", dataIndex: "datetime", key: "datetime" },
   { title: "Atharagalla Water Level", dataIndex: "atharagalla", key: "atharagalla" },
@@ -28,9 +22,8 @@ const columns: ColumnsType<DataType> = [
   { title: "Stream Flow Rate", dataIndex: "streamflow", key: "streamflow" },
 ];
 
-// The ReportsTable component should accept reportData as a prop
-const ReportsTable: FC<ReportsTableProps> = ({ reportData }) => {
-  return <Table columns={columns} dataSource={reportData} />;
+const ReportsTable: FC<{ reportData: DataType[] }> = ({ reportData }) => {
+  return <Table columns={columns} dataSource={reportData} pagination={false} bordered rowKey="key" />;
 };
 
 export default ReportsTable;
