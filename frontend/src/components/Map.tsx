@@ -1,47 +1,42 @@
-import React, { FC, useState } from "react";
+import React from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
-import { Button, Typography } from "antd";
 import "leaflet/dist/leaflet.css";
 
-// Define the prop type
 interface MapProps {
-  updateFloodData: (cityId: number) => void; // Add this prop
+  updateFloodData: (cityId: number) => void;
+  cities: { id: number; name: string; lat: number; lng: number }[]; // List of cities with lat/lng
 }
 
-const { Title } = Typography;
-
-const Map: FC<MapProps> = ({ updateFloodData }) => {
-  const cities = [
-    { id: 1, name: "Mumbai", lat: 19.0760, lng: 72.8777 },
-    { id: 2, name: "Pune", lat: 18.5204, lng: 73.8567 },
-    { id: 3, name: "Nagpur", lat: 21.1458, lng: 79.0882 },
-    { id: 4, name: "Nashik", lat: 19.9975, lng: 73.7898 },
-    { id: 5, name: "Aurangabad", lat: 19.8762, lng: 75.3433 },
-  ];
-
-  // Handle city click and update flood data
-  const handleCityClick = (cityId: number) => {
-    updateFloodData(cityId); // Update flood data on city click
-  };
+const Map: React.FC<MapProps> = ({ updateFloodData, cities }) => {
+  // Set the center of the map (Maharashtra coordinates as an example)
+  const center = { lat: 19.0760, lng: 72.8777 }; // Mumbai coordinates, adjust if needed
 
   return (
-    <div style={{ padding: "20px" }}>
-      <MapContainer center={[19.0760, 72.8777]} zoom={6} style={{ height: "60vh" }}>
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
-        {cities.map(({ id, name, lat, lng }) => (
-          <Marker key={id} position={[lat, lng]} icon={new L.Icon({ iconUrl: "/path/to/icon.png", iconSize: [25, 41] })}>
-            <Popup>
-              <Title level={4}>{name}</Title>
-              <Button onClick={() => handleCityClick(id)}>Get Flood Data</Button>
-            </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
-    </div>
+    <MapContainer center={center} zoom={10} style={{ height: "400px", width: "100%" }}>
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      />
+
+      {/* Loop through cities and add markers */}
+      {cities.map((city) => (
+        <Marker
+          key={city.id}
+          position={[city.lat, city.lng]}
+          icon={new L.Icon({
+            iconUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1f/Red_dot.svg", // Marker icon
+            iconSize: [25, 25],
+          })}
+        >
+          <Popup>
+            <span>{city.name}</span>
+            <br />
+            <button onClick={() => updateFloodData(city.id)}>View Report</button>
+          </Popup>
+        </Marker>
+      ))}
+    </MapContainer>
   );
 };
 

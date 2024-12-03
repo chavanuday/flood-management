@@ -6,27 +6,47 @@ import Map from "../components/Map";
 const { Title } = Typography;
 
 const Home: FC = () => {
-  const [waterLevel, setWaterLevel] = useState(80); // Default water level for Mumbai or other city
-  const [streamFlow, setStreamFlow] = useState(0.255); // Default stream flow
-  const [floodStatus, setFloodStatus] = useState("Flood"); // Default flood status
+  // State variables for flood data
+  const [waterLevel, setWaterLevel] = useState<number>(80); // Default water level for Mumbai or other city
+  const [streamFlow, setStreamFlow] = useState<number>(0.255); // Default stream flow
+  const [floodStatus, setFloodStatus] = useState<string>("Flood"); // Default flood status
+  const [cityReport, setCityReport] = useState<string>(""); // Report text
 
-  // Function to update the water level based on selected city
+  // Hardcoded flood data for cities in Maharashtra with lat/lng
+  const cities = [
+    { id: 1, name: "Mumbai", lat: 19.0760, lng: 72.8777, waterLevel: 80, streamFlow: 0.5, floodStatus: "Flood" },
+    { id: 2, name: "Pune", lat: 18.5204, lng: 73.8567, waterLevel: 20, streamFlow: 0.1, floodStatus: "No Flood" },
+    { id: 3, name: "Nagpur", lat: 21.1466, lng: 79.0882, waterLevel: 55, streamFlow: 0.3, floodStatus: "Flood" },
+    // Add more cities with their respective lat/lng
+  ];
+
+  // Function to update the water level, stream flow, flood status, and generate the report
   const updateFloodData = (cityId: number) => {
-    const floodData = JSON.parse(localStorage.getItem(`city_${cityId}_reports`) || "[]");
+    const selectedCity = cities.find(city => city.id === cityId);
 
-    if (floodData.length > 0) {
-      setWaterLevel(floodData[0].atharagalla); // Update the water level dynamically
-      setStreamFlow(floodData[0].streamflow); // Update stream flow dynamically
-      setFloodStatus(floodData[0].atharagalla > 80 ? "Flood" : "No Flood"); // Update flood status dynamically
+    if (selectedCity) {
+      setWaterLevel(selectedCity.waterLevel);
+      setStreamFlow(selectedCity.streamFlow);
+      setFloodStatus(selectedCity.floodStatus);
+
+      // Generate the report text dynamically
+      const report = `
+        City: ${selectedCity.name}
+        Water Level: ${selectedCity.waterLevel}%
+        Stream Flow: ${selectedCity.streamFlow} m³/s
+        Flood Status: ${selectedCity.floodStatus}
+      `;
+      setCityReport(report); // Update the report
     }
   };
 
   return (
     <div>
-      <Title level={2}>Real Time Flood Forecast</Title>
+      <Title level={2}>Real-Time Flood Forecast</Title>
 
       <Row gutter={16}>
         <Col span={12}>
+          {/* Cards displaying flood data */}
           <Row gutter={16} style={{ marginBottom: "3rem" }}>
             <Col span={12}>
               <Card title="Stream Flow" bordered={false}>
@@ -34,7 +54,7 @@ const Home: FC = () => {
               </Card>
             </Col>
             <Col span={12}>
-              <Card title="Flood status" bordered={false}>
+              <Card title="Flood Status" bordered={false}>
                 <Title level={4} style={{ color: floodStatus === "Flood" ? "red" : "green" }}>
                   {floodStatus}
                 </Title>
@@ -44,8 +64,17 @@ const Home: FC = () => {
 
           <Row gutter={16} style={{ marginBottom: "3rem" }}>
             <Col span={24}>
-              <Card title="Real Time Water Level" bordered={false}>
+              <Card title="Real-Time Water Level" bordered={false}>
                 <CircularProgressBar waterLevel={waterLevel} />
+              </Card>
+            </Col>
+          </Row>
+
+          {/* Display the flood report */}
+          <Row gutter={16}>
+            <Col span={24}>
+              <Card title="Flood Report" bordered={false}>
+                <pre>{cityReport}</pre> {/* Display the generated report */}
               </Card>
             </Col>
           </Row>
@@ -54,9 +83,9 @@ const Home: FC = () => {
         <Col span={12}>
           <Row gutter={16}>
             <Col span={24}>
-              <Card title="Real Time Map" bordered={false}>
-                {/* Pass the updateFloodData function to Map component */}
-                <Map updateFloodData={updateFloodData} />
+              <Card title="Real-Time Map" bordered={false}>
+                {/* Map component, passing the updateFloodData function */}
+                <Map updateFloodData={updateFloodData} cities={cities} />
               </Card>
             </Col>
           </Row>
